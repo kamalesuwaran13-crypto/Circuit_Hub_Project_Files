@@ -1,0 +1,57 @@
+# Raspberry Pi Pico based Line Following Robot
+#RESEARCH TAMILAN
+
+from machine import Pin
+import time #importing time
+import utime
+# Defining motor pins
+motor1=Pin(10,Pin.OUT)
+motor2=Pin(11,Pin.OUT)
+motor3=Pin(12,Pin.OUT)
+motor4=Pin(13,Pin.OUT)
+
+right_ir = Pin(2, Pin.IN)
+left_ir = Pin(3, Pin.IN)
+
+def move_forward():    #forward
+    motor1.low()
+    motor2.high()
+    motor3.high()
+    motor4.low() 
+
+def move_backward():    #Backward
+    motor1.high()
+    motor2.low()
+    motor3.low()
+    motor4.high() 
+
+def turn_right():      #turn right
+    motor1.low()
+    motor2.high()
+    motor3.low()
+    motor4.high() 
+
+def turn_left():       #turn right
+    motor1.high()
+    motor2.low()
+    motor3.high()
+    motor4.low()
+
+def stop():           #stop
+    motor1.low()
+    motor2.low()
+    motor3.low()
+    motor4.low()
+while True:
+    right_val=right_ir.value() #Getting right IR value(0 or 1)
+    left_val=left_ir.value() #Getting left IR value(0 or 1)
+    print(str(right_val)+"-"+str(left_val))
+    
+    if right_val==0 and left_val==0:
+        move_forward()
+    elif right_val==1 and left_val==0:
+        turn_right()
+    elif right_val==0 and left_val==1:
+        turn_left()
+    else:
+        stop()

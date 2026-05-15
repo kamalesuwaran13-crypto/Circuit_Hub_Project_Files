@@ -1,0 +1,37 @@
+var ss = SpreadsheetApp.openById('1IudQRvWafJE7iarJkApN6ZI6KuFzmf9Me0cQbuoCDow'); // Google Sheet ID
+var sheet = ss.getSheetByName('Sheet1');
+var timezone = "Asia/Kolkata"; // Set your timezone
+
+function doGet(e) {
+  Logger.log(JSON.stringify(e));
+
+  if (!e.parameter.name || !e.parameter.roll || !e.parameter.status) {
+    return ContentService.createTextOutput("Error: Missing 'name', 'roll', or 'status' parameter")
+                         .setMimeType(ContentService.MimeType.TEXT);
+  }
+
+  var Curr_Date = new Date();
+  var Curr_Time = Utilities.formatDate(Curr_Date, "Asia/Kolkata", 'HH:mm:ss');
+  var name = stripQuotes(e.parameter.name);
+  var roll = stripQuotes(e.parameter.roll);
+  var status = stripQuotes(e.parameter.status);  // Now using status from URL
+
+  // Store Data in Google Sheets
+  var ss = SpreadsheetApp.openById('1IudQRvWafJE7iarJkApN6ZI6KuFzmf9Me0cQbuoCDow'); // Google Sheet ID
+  var sheet = ss.getSheetByName('Sheet1');
+  var nextRow = sheet.getLastRow() + 1;
+  sheet.getRange("A" + nextRow).setValue(roll);
+  sheet.getRange("B" + nextRow).setValue(name);
+  sheet.getRange("C" + nextRow).setValue(Utilities.formatDate(Curr_Date, "Asia/Kolkata", 'yyyy-MM-dd'));
+  sheet.getRange("D" + nextRow).setValue(Curr_Time);
+  sheet.getRange("E" + nextRow).setValue(status); // Now using status from the URL
+
+  // Send Response to ESP8266
+  return ContentService.createTextOutput("Roll: " + roll + ", " + name + " marked as " + status)
+                       .setMimeType(ContentService.MimeType.TEXT);
+}
+
+// ✅ Add the missing stripQuotes function
+function stripQuotes(value) {
+  return value.toString().replace(/^["']|['"]$/g, ""); // Removes surrounding quotes
+}
